@@ -12,18 +12,25 @@ todoRouter.use(auth); // authentication
 const now = new Date();
 
 
-todoRouter.get("/dashboard",  async (req, res) => {
-	try {
-		const todos = await todoModel.findOne({ userId: req.userId });
-		res.json({
-			todo: todos.title
-		});
-	} catch(error) {
-		return res.status(401).json({
-			message: "Error in Getting data from db",
-			error: error.message
-		});
-	}
+todoRouter.get("/dashboard", async (req, res) => {
+    try {
+        const todos = await todoModel.findOne({ userId: req.userId });
+
+        if (!todos) {
+            return res.status(404).json({
+                message: "No todos found for the user",
+            });
+        }
+
+        res.json({
+            todo: todos.title,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error in Getting data from db",
+            error: error.message,
+        });
+    }
 });
 
 todoRouter.post("/",  async (req, res) => {
